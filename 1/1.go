@@ -6,7 +6,6 @@ import (
 	"os"
 	"regexp"
 	"strconv"
-	"strings"
 )
 
 func main() {
@@ -16,15 +15,12 @@ func main() {
 	}
 	defer file.Close()
 
-	scanner := bufio.NewScanner(file)
-
+	regex := regexp.MustCompile(`\D`)
 	digits := make([][]string, 0)
 
+	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-
-		regex := regexp.MustCompile(`\D`)
-
 		stringNum := regex.ReplaceAllString(line, "")
 
 		var arr []string
@@ -37,19 +33,19 @@ func main() {
 		digits = append(digits, arr)
 	}
 
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
+
 	totalValue := 0
-
-	for _, v := range digits {
-		if len(v) == 1 {
-			v = append(v, v[0])
+	for _, pair := range digits {
+		if len(pair) == 1 {
+			pair = append(pair, pair[0])
 		}
-
-		joined := strings.Join(v, "")
-		num, err := strconv.Atoi(joined)
+		num, err := strconv.Atoi(pair[0] + pair[1])
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(num)
 		totalValue += num
 	}
 
